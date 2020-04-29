@@ -5,37 +5,85 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-class Network:
+def tanh(x):
+    return np.tanh(x)
 
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.weights1 = np.random.uniform(-10, 10, (x, 12))
-        self.weights2 = np.random.uniform(-10, 10, (12, 50))
-        self.weights3 = np.random.uniform(-10, 10, (50, 25))
-        self.weights4 = np.random.uniform(-10, 10, (25, 5))
-        self.output = np.zeros(y)
 
-    def GetLayers(self):
-        return [self.weights1, self.weights2, self.weights3, self.weights4]
+class Layer:
+    def __init__(self):
+        self.input = None
+        self.output = None
 
-    def SetLayers(self, layers):
-        self.weights1 = layers[0]
-        self.weights2 = layers[1]
-        self.weights3 = layers[2]
-        self.weights4 = layers[3]
+    def forward_propagation(self, input_data):
+        raise NotImplementedError
 
-    def Predict(self, net_input):
-        layer1 = sigmoid(np.dot(net_input, self.weights1))
-        layer2 = sigmoid(np.dot(layer1, self.weights2))
-        layer3 = sigmoid(np.dot(layer2, self.weights3))
 
-        self.output = sigmoid(np.dot(layer3, self.weights4))
+class FCLayer(Layer):
+
+    def __init__(self, input_size, output_size):
+        super().__init__()
+        self.weights = np.random.rand(input_size, output_size) - 0.5
+        self.bias = np.random.rand(1, output_size) - 0.5
+
+    def forward_propagation(self, input_data):
+        self.input = input_data
+        self.output = np.dot(self.input, self.weights) + self.bias
         return self.output
 
 
-if __name__ == "__main__":
-    net = Network(15, 5)
+class ActivationLayer(Layer):
 
-    print(net.Predict(np.array([562,566,45,3,5,6,8,1,6,4,7,8,2,6,9])))
-    print(net.Predict(np.array([0, 0, 0, 3, 5, 6, 8, 1, 8, 4, 7, 8, 2, 6, 9])))
+    def __init__(self, activation):
+        super().__init__()
+        self.activation = activation
+
+    def forward_propagation(self, input_data):
+        self.input = input_data
+        self.output = self.activation(self.input)
+        return self.output
+
+
+class Network:
+
+    def __init__(self):
+        self.layers = []
+
+    def add(self, layer):
+        self.layers.append(layer)
+
+    def predict(self, input_data):
+        output = input_data
+
+        for layer in self.layers:
+            output = layer.forward_propagation(output)
+
+        return output
+
+    def get_weights(self):
+        weights = []
+
+        for layer in self.layers:
+            if type(layer).__name__ == "FCLayer":
+                weights.append(layer.weights)
+
+        return weights
+
+    def set_weights(self, weights):
+        i = 0
+        for layer in self.layers:
+            if type(layer).__name__ == "FCLayer":
+                layer.weights = weights[i]
+                i += 1
+
+
+def CreateNetwork():
+    network = Network()
+
+    network.add(FCLayer(2, 20))
+    network.add(ActivationLayer(tanh))
+    network.add(FCLayer(20, 10))
+    network.add(ActivationLayer(tanh))
+    network.add(FCLayer(10, 2))
+    network.add(ActivationLayer(tanh))
+
+    return network

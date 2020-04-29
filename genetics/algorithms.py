@@ -1,13 +1,13 @@
 import random
 import numpy as np
 
-from .network import Network
+from .network import CreateNetwork
 
 
 class Subject:
 
     def __init__(self):
-        self.network = Network(12, 5)
+        self.network = CreateNetwork()
         self.fitness = 0
 
     def SetFitness(self, val):
@@ -18,7 +18,7 @@ class Subject:
 
     def MovementPrediction(self, model_input):
         model_input = np.array([model_input])
-        response = self.network.Predict(model_input)[0].tolist()
+        response = self.network.predict(model_input)[0].tolist()
         return response.index(max(response))
 
 
@@ -32,52 +32,18 @@ def Mutation(layers, mutation_factor: float):
     return layers
 
 
-def TwoPointsCrossover(subject1: Subject, subject2: Subject):
-    subject1_layers = subject1.network.GetLayers()
-    subject2_layers = subject2.network.GetLayers()
-    child_layers = []
+def UniformCrossover(parent1, parent2):
+    subject1_layers = parent1.network.get_weights()
+    subject2_layers = parent2.network.get_weights()
+    child_layers = np.copy(subject1_layers)
 
-    for i in range(len(subject1_layers)):
-        child_layer = []
-        for j in range(len(subject1_layers[i])):
-            subject1_neuron = subject1_layers[i][j].tolist()
-            subject2_neuron = subject2_layers[i][j].tolist()
+    for layer in range(len(child_layers)):
+        for neuron in range(len(child_layers[layer])):
+            for weight in range(len(child_layers[layer][neuron])):
+                child_layers[layer][neuron][weight] = random.uniform(subject1_layers[layer][neuron][weight],
+                                                                     subject2_layers[layer][neuron][weight])
 
-            slice_point1 = int(len(subject1_neuron) / 3)
-            slice_point2 = slice_point1 * 2
-            child_neuron = subject1_neuron[:slice_point1] + \
-                           subject2_neuron[slice_point1:slice_point2] + \
-                           subject1_neuron[slice_point2:]
-
-            child_layer.append(np.array(child_neuron))
-
-        child_layers.append(np.array(child_layer))
-
-    return np.array(child_layers)
-
-
-def UniformCrossover(subject1: Subject, subject2: Subject):
-    subject1_layers = subject1.network.GetLayers()
-    subject2_layers = subject2.network.GetLayers()
-    child_layers = []
-
-    for i in range(len(subject1_layers)):
-        child_layer = []
-        for j in range(len(subject1_layers[i])):
-            child_neuron = []
-
-            for k in range(len(subject1_layers[i][j])):
-                weight1 = subject1_layers[i][j][k]
-                weight2 = subject2_layers[i][j][k]
-                child_weight = random.uniform(weight1, weight2)
-
-                child_neuron.append(child_weight)
-
-            child_layer.append(np.array(child_neuron))
-
-        child_layers.append(np.array(child_layer))
-
-    return np.array(child_layers)
+    return child_layers
 
 
 def CreatePopulation(pop_size=5):
@@ -98,7 +64,9 @@ def EvolvePopulation(population, mutation_factor=0.1):
 
     for i in range(len(population) - 2):
         child_layers = Mutation(UniformCrossover(parent1, parent2), mutation_factor)
-        population[i].network.SetLayers(child_layers)
+        population[i].network.set_weights(child_layers)
+
+    population[-1] = parent1
 
     return population
 

@@ -6,14 +6,14 @@ import game
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 BOARD_SIZE = (500, 400)
-POP_SIZE = 20
+POP_SIZE = 100
 FPS = 60
 
 population = genetics.CreatePopulation(pop_size=POP_SIZE)
 boards = game.CreateBoards(pop_size=POP_SIZE, board_size=BOARD_SIZE)
 window = game.Window(size=BOARD_SIZE, fps=FPS)
 
-generation = 0
+generation = 1
 display_board = 0
 game_over_boards = 0
 
@@ -43,7 +43,6 @@ try:
             i += 1
 
         if game_over_boards == len(boards):
-            print(" [i] Evolving networks")
 
             generation += 1
             display_board = 0
@@ -51,12 +50,14 @@ try:
 
             population, boards = genetics.SortPopulation(population, boards)
 
+            print(" [i] Evolving %i networks" % len(population))
+
             population = genetics.EvolvePopulation(population)
             boards = game.ResetBoards(boards)
 
             print(" [i] generation #%i evolved" % generation)
 
-        window.Draw(boards[display_board])
+        window.Draw(boards[display_board], generation)
 
 except KeyboardInterrupt:
     pass
