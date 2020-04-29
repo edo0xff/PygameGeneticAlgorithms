@@ -6,7 +6,7 @@ import game
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 BOARD_SIZE = (500, 400)
-POP_SIZE = 100
+POP_SIZE = 20
 FPS = 60
 
 population = genetics.CreatePopulation(pop_size=POP_SIZE)

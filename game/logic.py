@@ -62,7 +62,7 @@ class Board:
     RIGHT = 1
     NULL = 2
 
-    def __init__(self, size=(500, 500), id=0, number_of_enemies=5, spawn_rate=2, spawned_enemies=1):
+    def __init__(self, size=(500, 500), id=0, number_of_enemies=3, spawn_rate=2, spawned_enemies=3):
         self.size = size
         self.balls = [Ball() for i in range(number_of_enemies)]
         self.player = Ball([int(size[0] / 2), int(size[1] - 50)], velocity=5)
@@ -80,7 +80,7 @@ class Board:
             self.balls[i].Reset()
 
         self.player.SetPosition(int(self.size[0] / 2), int(self.size[1] - 50))
-        self.spawned_enemies = 1
+        self.spawned_enemies = 3
         self.game_over = False
         self.start_time = time.time()
         self.spawn_time = time.time()
@@ -97,6 +97,8 @@ class Board:
 
     def Tick(self):
 
+        random_y = 0
+
         for i in range(self.spawned_enemies):
             ball = self.balls[i]
             position = ball.GetPosition()
@@ -104,18 +106,19 @@ class Board:
             if not ball.IsSpawned():
                 random_x = random.randrange(100, self.size[0] - 100)
 
-                ball.SetPosition(random_x, 0)
+                ball.SetPosition(random_x, random_y)
                 ball.SetMovementDirectionY(1)
                 ball.Spawn()
 
-            elif position[1] >= self.size[1] + 300:
+            elif position[1] >= self.size[1]:
                 self.game_over = True
+
+            random_y -= 150
 
             ball.Move()
 
             if self.player.Collide(ball):
-                random_x = random.randrange(100, self.size[0] - 100)
-                ball.SetPosition(random_x, 0)
+                ball.spawned = False
                 self.score += 1
 
     def MovePlayer(self, direction):
@@ -130,7 +133,7 @@ class Board:
         else:
             self.player.SetMovement([0, 0])
 
-        if position[0] - 100 <= 0 or position[0] + 100 >= self.size[0]:
+        if position[0] - 50 <= 0 or position[0] + 50 >= self.size[0]:
             # self.player.SetMovementDirectionX(0)
             self.game_over = True
 
@@ -142,9 +145,13 @@ class Board:
         enemy_positions = []
 
         for ball in self.balls:
-            enemy_positions.append(ball.GetPosition()[0])
+            enemy_positions.append(ball.GetPosition())
 
-        positions = [player_position[0], sorted(enemy_positions)[-1]]
+        def SortByNearest(enemy):
+            return enemy[1]
+
+        enemy_positions = sorted(enemy_positions, key=SortByNearest)
+        positions = [player_position[0], enemy_positions[-1][0]]
 
         return positions
 

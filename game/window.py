@@ -33,7 +33,7 @@ class Window:
 
         for enemy_position in enemies:
             if not enemy_position == [-1, -1]:
-                pygame.draw.line(self.screen, self.LINE_COLOR, player_position, enemy_position)
+                # pygame.draw.line(self.screen, self.LINE_COLOR, player_position, enemy_position)
                 pygame.draw.circle(self.screen, self.ENEMY_COLOR, enemy_position, self.BALL_RADIUS)
 
         pygame.draw.circle(self.screen, self.PLAYER_COLOR, player_position, self.BALL_RADIUS)
