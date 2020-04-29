@@ -26,8 +26,12 @@ while playing:
     if not playing:
         continue
 
+    if pygame.key.get_pressed()[pygame.K_s]:
+        population[display_board].network.save_state('./model.json')
+
     i = 0
     for board in boards:
+
         if not board.IsGameOver():
             neural_net = population[i]
 

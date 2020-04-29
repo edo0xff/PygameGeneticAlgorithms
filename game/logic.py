@@ -34,6 +34,14 @@ class Ball:
         self.rect.x = x
         self.rect.y = y
 
+    def SetPositionX(self, x):
+        self.position[0] = x
+        self.rect.x = x
+
+    def SetPositionY(self, y):
+        self.position[1] = y
+        self.rect.y = y
+
     def SetMovement(self, movement_vector):
         self.movement = movement_vector
 
@@ -59,10 +67,10 @@ class Board:
     RIGHT = 1
     NULL = 2
 
-    def __init__(self, size=(500, 500), id=0, number_of_enemies=10, spawn_rate=15):
+    def __init__(self, size=(500, 500), id=0, number_of_enemies=10, spawn_rate=15, player_vel=5, balls_vel=1, training=False):
         self.size = size
-        self.balls = [Ball(), Ball()]
-        self.player = Ball([int(size[0] / 2), int(size[1] - 50)], velocity=5)
+        self.balls = [Ball(velocity=balls_vel), Ball(velocity=balls_vel)]
+        self.player = Ball([int(size[0] / 2), int(size[1] - 50)], velocity=player_vel)
         self.number_of_enemies = number_of_enemies
         self.spawn_rate = spawn_rate
         self.start_time = time.time()
@@ -70,9 +78,11 @@ class Board:
         self.score = 0
         self.id = id
 
+        self.balls_velocity = balls_vel
+        self.training = training
+
     def Reset(self):
-        for i in range(len(self.balls)):
-            self.balls[i].Reset()
+        self.balls = [Ball(velocity=self.balls_velocity), Ball(velocity=self.balls_velocity)]
 
         self.player.SetPosition(int(self.size[0] / 2), int(self.size[1] - 50))
         self.start_time = time.time()
@@ -88,9 +98,9 @@ class Board:
     def GetID(self):
         return self.id
 
-    def Tick(self):
+    def Tick(self, key_pressed=True):
         if (time.time() - self.start_time) > self.spawn_rate and len(self.balls) < self.number_of_enemies:
-            self.balls.append(Ball())
+            self.balls.append(Ball(velocity=self.balls_velocity))
             self.start_time = time.time()
 
         for ball in self.balls:
@@ -109,7 +119,7 @@ class Board:
 
             ball.Move()
 
-            if self.player.Collide(ball):
+            if self.player.Collide(ball) and key_pressed:
                 ball.spawned = False
                 self.score += 1
 
@@ -126,8 +136,11 @@ class Board:
             self.player.SetMovement([0, 0])
 
         if position[0] - 50 <= 0 or position[0] + 50 >= self.size[0]:
-            # self.player.SetMovementDirectionX(0)
-            self.game_over = True
+            if self.training:
+                self.game_over = True
+
+            else:
+                self.player.SetMovementDirectionX(0)
 
         self.player.Move()
 
@@ -163,7 +176,7 @@ def CreateBoards(pop_size=5, board_size=(500, 500)):
     boards = []
 
     for i in range(pop_size):
-        boards.append(Board(size=board_size, id=i))
+        boards.append(Board(size=board_size, id=i, training=True))
 
     return boards
 

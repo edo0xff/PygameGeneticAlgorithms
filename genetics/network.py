@@ -1,3 +1,4 @@
+import json
 import numpy as np
 
 
@@ -74,6 +75,30 @@ class Network:
             if type(layer).__name__ == "FCLayer":
                 layer.weights = weights[i]
                 i += 1
+
+    def save_state(self, file_name):
+        weights = self.get_weights()
+
+        i = 0
+        for i in range(len(weights)):
+            weights[i] = weights[i].tolist()
+
+        with open(file_name, 'w') as outfile:
+            json.dump(weights, outfile)
+
+        print(" [i] State saved")
+
+    def load_state(self, file_name):
+        with open(file_name) as json_file:
+            weights = json.load(json_file)
+
+            i = 0
+            for i in range(len(weights)):
+                weights[i] = np.array(weights[i])
+
+            self.set_weights(weights)
+
+        print(" [i] State loaded")
 
 
 def CreateNetwork():

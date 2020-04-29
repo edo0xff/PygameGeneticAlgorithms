@@ -10,7 +10,8 @@ class Window:
     FOOD_COLOR = (255, 255, 255)
     BALL_RADIUS = 20
 
-    def __init__(self, size=(500, 500)):
+    def __init__(self, size=(500, 500), fps=None, title="Genetic Algorithms - PyGame"):
+        self.fps = fps
         self.size = size
         self.clock = pygame.time.Clock()
 
@@ -21,7 +22,7 @@ class Window:
 
         self.highest_score = 0
 
-        pygame.display.set_caption("GA Game")
+        pygame.display.set_caption(title)
 
     def Draw(self, board, generation):
         board_id = board.GetID()
@@ -73,3 +74,6 @@ class Window:
             self.highest_score = board_score
 
         pygame.display.flip()
+
+        if self.fps:
+            self.clock.tick(self.fps)
