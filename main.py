@@ -7,57 +7,57 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 BOARD_SIZE = (500, 400)
 POP_SIZE = 20
-FPS = 60
 
 population = genetics.CreatePopulation(pop_size=POP_SIZE)
 boards = game.CreateBoards(pop_size=POP_SIZE, board_size=BOARD_SIZE)
-window = game.Window(size=BOARD_SIZE, fps=FPS)
+window = game.Window(size=BOARD_SIZE)
 
 generation = 1
 display_board = 0
 game_over_boards = 0
 
-try:
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+playing = True
+while playing:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            playing = False
+            pygame.quit()
 
-        i = 0
-        for board in boards:
-            if not board.IsGameOver():
-                neural_net = population[i]
+    if not playing:
+        continue
 
-                movement = neural_net.MovementPrediction(board.Get1DPositions())
-                board.MovePlayer(movement)
+    i = 0
+    for board in boards:
+        if not board.IsGameOver():
+            neural_net = population[i]
 
-                board.Tick()
+            movement = neural_net.MovementPrediction(board.Get1DPositions())
+            board.MovePlayer(movement)
 
-                if board.IsGameOver():
-                    game_over_boards += 1
-                    population[i].SetFitness(board.GetScore())
+            board.Tick()
 
-            elif display_board == i:
-                display_board += 1
+            if board.IsGameOver():
+                game_over_boards += 1
+                population[i].SetFitness(board.GetScore())
 
-            i += 1
+        elif display_board == i:
+            display_board += 1
 
-        if game_over_boards == len(boards):
+        i += 1
 
-            generation += 1
-            display_board = 0
-            game_over_boards = 0
+    if game_over_boards == len(boards):
 
-            population, boards = genetics.SortPopulation(population, boards)
+        generation += 1
+        display_board = 0
+        game_over_boards = 0
 
-            print(" [i] Evolving %i networks" % len(population))
+        population, boards = genetics.SortPopulation(population, boards)
 
-            population = genetics.EvolvePopulation(population)
-            boards = game.ResetBoards(boards)
+        print(" [i] Evolving %i networks" % len(population))
 
-            print(" [i] generation #%i evolved" % generation)
+        population = genetics.EvolvePopulation(population)
+        boards = game.ResetBoards(boards)
 
-        window.Draw(boards[display_board], generation)
+        print(" [i] generation #%i evolved" % generation)
 
-except KeyboardInterrupt:
-    pass
+    window.Draw(boards[display_board], generation)
