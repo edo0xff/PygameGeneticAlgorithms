@@ -5,7 +5,7 @@ import pygame
 board_size = (500, 400)
 
 board = game.Board(size=board_size, balls_vel=3)
-window = game.Window(size=board_size, fps=120, title="You are playing")
+window = game.Window(size=board_size, fps=60, title="You are playing")
 
 playing = True
 while playing:

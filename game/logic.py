@@ -3,6 +3,10 @@ import random
 import pygame
 
 
+def CurrentTIme():
+    return int(round(time.time() * 1000))
+
+
 class Ball:
 
     def __init__(self, initial_position=None, velocity=1):
@@ -67,13 +71,12 @@ class Board:
     RIGHT = 1
     NULL = 2
 
-    def __init__(self, size=(500, 500), id=0, number_of_enemies=10, spawn_rate=15, player_vel=5, balls_vel=1, training=False):
+    def __init__(self, size=(500, 500), id=0, spawn_rate=125, player_vel=5, balls_vel=1, training=False):
         self.size = size
-        self.balls = [Ball(velocity=balls_vel), Ball(velocity=balls_vel)]
+        self.balls = []
         self.player = Ball([int(size[0] / 2), int(size[1] - 50)], velocity=player_vel)
-        self.number_of_enemies = number_of_enemies
         self.spawn_rate = spawn_rate
-        self.start_time = time.time()
+        self.start_time = CurrentTIme()
         self.game_over = False
         self.score = 0
         self.id = id
@@ -82,7 +85,7 @@ class Board:
         self.training = training
 
     def Reset(self):
-        self.balls = [Ball(velocity=self.balls_velocity), Ball(velocity=self.balls_velocity)]
+        self.balls = []
 
         self.player.SetPosition(int(self.size[0] / 2), int(self.size[1] - 50))
         self.start_time = time.time()
@@ -99,16 +102,20 @@ class Board:
         return self.id
 
     def Tick(self, key_pressed=True):
-        if (time.time() - self.start_time) > self.spawn_rate and len(self.balls) < self.number_of_enemies:
-            self.balls.append(Ball(velocity=self.balls_velocity))
-            self.start_time = time.time()
+        elapsed_time = CurrentTIme() - self.start_time
+
+        if elapsed_time > self.spawn_rate:
+            if random.choice([0, 1]):
+                self.balls.append(Ball(velocity=self.balls_velocity))
+
+            self.start_time = CurrentTIme()
 
         for ball in self.balls:
             position = ball.GetPosition()
 
             if not ball.IsSpawned():
-                random_x = random.randrange(150, self.size[0] - 150, 30)
-                random_y = random.randrange(-1000, -100, 50)
+                random_x = random.randrange(180, self.size[0] - 180, 30)
+                random_y = 0
 
                 ball.SetPosition(random_x, random_y)
                 ball.SetMovementDirectionY(1)
@@ -120,7 +127,7 @@ class Board:
             ball.Move()
 
             if self.player.Collide(ball) and key_pressed:
-                ball.spawned = False
+                self.balls.pop(self.balls.index(ball))
                 self.score += 1
 
     def MovePlayer(self, direction):
@@ -149,8 +156,12 @@ class Board:
 
         enemy_positions = []
 
-        for ball in self.balls:
-            enemy_positions.append(ball.GetPosition())
+        if len(self.balls) > 0:
+            for ball in self.balls:
+                enemy_positions.append(ball.GetPosition())
+
+        else:
+            enemy_positions = [[int(self.size[1] / 2), 0]]
 
         def SortByNearest(enemy):
             return enemy[1]

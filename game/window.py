@@ -57,7 +57,9 @@ class Window:
 
             i += 1
 
-        pygame.draw.circle(self.screen, self.ENEMY_COLOR, enemies[-1], self.BALL_RADIUS)
+        if len(enemies) > 0:
+            pygame.draw.circle(self.screen, self.ENEMY_COLOR, enemies[-1], self.BALL_RADIUS)
+
         pygame.draw.circle(self.screen, self.PLAYER_COLOR, player_position, self.BALL_RADIUS)
 
         label = self.font.render("Gen %i Net #%i Score %i" % (generation, board_id, board_score), 1,
