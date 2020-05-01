@@ -3,15 +3,16 @@ import genetics
 import pygame
 
 
-board_size = (500, 400)
+BOARD_SIZE = (500, 600)
 
-board = game.Board(size=board_size, balls_vel=3, player_vel=8)
-window = game.Window(size=board_size, fps=60, title="A nice Neural Network is playing")
-player = genetics.Subject()
+board = game.Board(size=BOARD_SIZE, balls_vel=5, player_vel=10, spawn_rate=125)
+window = game.Window(size=BOARD_SIZE, fps=60, title="A nice Neural Network is playing")
+player = genetics.Genome()
 
-player.network.load_state("./model.json")
+player.network.LoadState("./model.json")
 
 playing = True
+
 while playing:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -29,4 +30,4 @@ while playing:
     if board.IsGameOver():
         board.Reset()
 
-    window.Draw(board, 0)
+    window.Draw(board)

@@ -4,7 +4,7 @@ import numpy as np
 from .network import CreateNetwork
 
 
-class Subject:
+class Genome:
 
     def __init__(self):
         self.network = CreateNetwork()
@@ -17,8 +17,7 @@ class Subject:
         return self.fitness
 
     def MovementPrediction(self, model_input):
-        model_input = np.array([model_input])
-        response = self.network.predict(model_input)[0].tolist()
+        response = self.network.Predict(np.array([model_input]))[0].tolist()
         return response.index(max(response))
 
 
@@ -33,8 +32,8 @@ def Mutation(layers, mutation_factor: float):
 
 
 def UniformCrossover(parent1, parent2):
-    subject1_layers = parent1.network.get_weights()
-    subject2_layers = parent2.network.get_weights()
+    subject1_layers = parent1.network.GetWeights()
+    subject2_layers = parent2.network.GetWeights()
     child_layers = np.copy(subject1_layers)
 
     for layer in range(len(child_layers)):
@@ -47,15 +46,19 @@ def UniformCrossover(parent1, parent2):
 
 
 def CreatePopulation(pop_size=5):
-    population = []
+    return [Genome() for _ in range(pop_size)]
 
-    for i in range(pop_size):
-        population.append(Subject())
 
-    return population
+def SortPopulation(population):
+    def GetFitness(item):
+        return item.GetFitness()
+
+    return sorted(population, key=GetFitness)
 
 
 def EvolvePopulation(population, mutation_factor=0.1):
+    population = SortPopulation(population)
+
     parent1 = population[-1]
     parent2 = population[-2]
 
@@ -64,24 +67,6 @@ def EvolvePopulation(population, mutation_factor=0.1):
 
     for i in range(len(population) - 2):
         child_layers = Mutation(UniformCrossover(parent1, parent2), mutation_factor)
-        population[i].network.set_weights(child_layers)
-
-    population[-1] = parent1
+        population[i].network.SetWeights(child_layers)
 
     return population
-
-
-def SortPopulation(population, boards):
-    def GetFitness(item):
-        return item[0].GetFitness()
-
-    z = sorted(zip(population, boards), key=GetFitness)
-
-    sorted_population = []
-    sorted_boards = []
-
-    for pop, board in z:
-        sorted_population.append(pop)
-        sorted_boards.append(board)
-
-    return sorted_population, sorted_boards

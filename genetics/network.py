@@ -15,7 +15,7 @@ class Layer:
         self.input = None
         self.output = None
 
-    def forward_propagation(self, input_data):
+    def ForwardPropagation(self, input_data):
         raise NotImplementedError
 
 
@@ -26,7 +26,7 @@ class FCLayer(Layer):
         self.weights = np.random.rand(input_size, output_size) - 0.5
         self.bias = np.random.rand(1, output_size) - 0.5
 
-    def forward_propagation(self, input_data):
+    def ForwardPropagation(self, input_data):
         self.input = input_data
         self.output = np.dot(self.input, self.weights) + self.bias
         return self.output
@@ -38,7 +38,7 @@ class ActivationLayer(Layer):
         super().__init__()
         self.activation = activation
 
-    def forward_propagation(self, input_data):
+    def ForwardPropagation(self, input_data):
         self.input = input_data
         self.output = self.activation(self.input)
         return self.output
@@ -52,15 +52,15 @@ class Network:
     def add(self, layer):
         self.layers.append(layer)
 
-    def predict(self, input_data):
+    def Predict(self, input_data):
         output = input_data
 
         for layer in self.layers:
-            output = layer.forward_propagation(output)
+            output = layer.ForwardPropagation(output)
 
         return output
 
-    def get_weights(self):
+    def GetWeights(self):
         weights = []
 
         for layer in self.layers:
@@ -69,15 +69,15 @@ class Network:
 
         return weights
 
-    def set_weights(self, weights):
+    def SetWeights(self, weights):
         i = 0
         for layer in self.layers:
             if type(layer).__name__ == "FCLayer":
                 layer.weights = weights[i]
                 i += 1
 
-    def save_state(self, file_name):
-        weights = self.get_weights()
+    def SaveState(self, file_name):
+        weights = self.GetWeights()
 
         i = 0
         for i in range(len(weights)):
@@ -88,7 +88,7 @@ class Network:
 
         print(" [i] State saved")
 
-    def load_state(self, file_name):
+    def LoadState(self, file_name):
         with open(file_name) as json_file:
             weights = json.load(json_file)
 
@@ -96,7 +96,7 @@ class Network:
             for i in range(len(weights)):
                 weights[i] = np.array(weights[i])
 
-            self.set_weights(weights)
+            self.SetWeights(weights)
 
         print(" [i] State loaded")
 
