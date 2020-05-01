@@ -65,7 +65,7 @@ class Board:
     RIGHT = 1
     NULL = 2
 
-    def __init__(self, size=(500, 500), id=0, spawn_rate=125, player_vel=5, balls_vel=1, training=False):
+    def __init__(self, size=(500, 500), id=0, spawn_rate=60, player_vel=5, balls_vel=1, training=False):
         self.size = size
         self.balls = []
         self.player = Ball([int(size[0] / 2), int(size[1] - 50)], velocity=player_vel)
