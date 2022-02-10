@@ -7,3 +7,4 @@ Genetic algorithms with PyGame
 """
 
 from .algorithms import *
+from .network import *

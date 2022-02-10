@@ -1,13 +1,11 @@
 import random
 import numpy as np
 
-from .network import CreateNetwork
-
 
 class Genome:
 
-    def __init__(self):
-        self.network = CreateNetwork()
+    def __init__(self, network):
+        self.network = network
         self.fitness = 0
 
     def SetFitness(self, val):
@@ -16,7 +14,7 @@ class Genome:
     def GetFitness(self):
         return self.fitness
 
-    def MovementPrediction(self, model_input):
+    def Inference(self, model_input):
         response = self.network.Predict(np.array([model_input]))[0].tolist()
         return response.index(max(response))
 
@@ -26,6 +24,7 @@ def Mutation(layers, mutation_factor: float):
     j = random.randrange(0, len(layers[i]))
     k = random.randrange(0, len(layers[i][j]))
     if random.random() <= mutation_factor:
+        print(" [i] A mutation has appeared in gnoma (%s/%s/%s)" % (i,j,k))
         layers[i][j][k] += random.uniform(-10, 10)
 
     return layers
@@ -45,8 +44,8 @@ def UniformCrossover(parent1, parent2):
     return child_layers
 
 
-def CreatePopulation(pop_size=5):
-    return [Genome() for _ in range(pop_size)]
+def CreatePopulation(network, pop_size=5):
+    return [Genome(network) for _ in range(pop_size)]
 
 
 def SortPopulation(population):

@@ -99,16 +99,3 @@ class Network:
             self.SetWeights(weights)
 
         print(" [i] State loaded")
-
-
-def CreateNetwork():
-    network = Network()
-
-    network.add(FCLayer(2, 20))
-    network.add(ActivationLayer(tanh))
-    network.add(FCLayer(20, 10))
-    network.add(ActivationLayer(tanh))
-    network.add(FCLayer(10, 2))
-    network.add(ActivationLayer(tanh))
-
-    return network
