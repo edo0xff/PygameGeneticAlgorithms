@@ -97,7 +97,6 @@ class Board:
         self.score = 0
         self.pos_history = []
         self.paths = []
-        self.matrix = {'x': [], 'y': []}
         self.final_pos = [0,0]
         self.rotations = 0
 
@@ -119,11 +118,11 @@ class Board:
             self.moving = False
 
             if not player_position in self.paths:
-                self.score += 1
                 self.paths.append(player_position)
         else:
             if not player_position in self.pos_history:
                 self.pos_history.append(player_position)
+                self.score += 1
             self.player.Move()
 
     def MovePlayer(self, direction):
@@ -227,7 +226,6 @@ class Board:
             front_pos = [player_position[0] + 20, player_position[1]]
 
         if front_pos in self.paths:
-            print('visited path in front of robot')
             sensors[1] = 1
 
         return sensors

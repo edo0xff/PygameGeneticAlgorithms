@@ -38,8 +38,8 @@ def UniformCrossover(parent1, parent2):
     for layer in range(len(child_layers)):
         for neuron in range(len(child_layers[layer])):
             for weight in range(len(child_layers[layer][neuron])):
-                child_layers[layer][neuron][weight] = random.uniform(subject1_layers[layer][neuron][weight],
-                                                                     subject2_layers[layer][neuron][weight])
+                child_layers[layer][neuron][weight] = random.choice([subject1_layers[layer][neuron][weight],
+                                                                     subject2_layers[layer][neuron][weight]])
 
     return child_layers
 

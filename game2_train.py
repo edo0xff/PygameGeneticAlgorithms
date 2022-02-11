@@ -4,7 +4,7 @@ import pygame
 import genetics
 
 BOARD_SIZE = (600, 600)
-POPULATION_SIZE = 10
+POPULATION_SIZE = 5
 
 network = genetics.Network()
 
