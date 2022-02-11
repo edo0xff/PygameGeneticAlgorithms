@@ -91,7 +91,7 @@ class Board:
         self.Reset()
 
     def Reset(self):
-        self.player.SetPosition(20, 20)
+        self.player.SetPosition(40, 40)
         self.start_time = CurrentTIme()
         self.game_over = False
         self.score = 0
@@ -184,7 +184,7 @@ class Board:
         player_position = self.GetPlayerPosition()
 
         # y
-        if (player_position[1] - 20) < 0:
+        if (player_position[1] - 40) < 0:
             if self.player.orientation == "UP":
                 sensors[1] = 1
             elif self.player.orientation == 'LEFT':
@@ -192,7 +192,7 @@ class Board:
             elif self.player.orientation == 'RIGHT':
                 sensors[0] = 1
 
-        elif (player_position[1] + 20) > self.size[1]:
+        elif (player_position[1] + 40) > self.size[1]:
             if self.player.orientation == "DOWN":
                 sensors[1] = 1
             elif self.player.orientation == 'RIGHT':
@@ -201,7 +201,7 @@ class Board:
                 sensors[1] = 1
 
         #x
-        if (player_position[0] + 20) > self.size[0]:
+        if (player_position[0] + 40) > self.size[0]:
             if self.player.orientation == "UP":
                 sensors[2] = 1
             elif self.player.orientation == 'RIGHT':
@@ -209,7 +209,7 @@ class Board:
             elif self.player.orientation == 'DOWN':
                 sensors[0] = 1
 
-        elif (player_position[0] - 20) < 0:
+        elif (player_position[0] - 40) < 0:
             if self.player.orientation == "UP":
                 sensors[0] = 1
             elif self.player.orientation == 'LEFT':
