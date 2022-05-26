@@ -10,6 +10,8 @@ network = genetics.Network()
 
 network.add(genetics.FCLayer(2, 20))
 network.add(genetics.ActivationLayer(genetics.tanh))
+network.add(genetics.FCLayer(20, 20))
+network.add(genetics.ActivationLayer(genetics.tanh))
 network.add(genetics.FCLayer(20, 10))
 network.add(genetics.ActivationLayer(genetics.tanh))
 network.add(genetics.FCLayer(10, 2))

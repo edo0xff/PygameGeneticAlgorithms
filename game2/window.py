@@ -24,6 +24,7 @@ class Window:
         board_id = board.GetID()
         board_score = board.GetScore()
         player_position = board.GetPlayerPosition()
+        sensors = board.GetSensorValues()
 
         if board_score > self.highest_score:
             self.highest_score = board_score
@@ -31,7 +32,7 @@ class Window:
         self.screen.fill((0, 0, 0))
 
         for position in board.pos_history:
-            pygame.draw.circle(self.screen, (0,0,255), position, self.BALL_RADIUS)
+            pygame.draw.circle(self.screen, (0,0,255), position, 20)
 
         # cross
         if board.player.orientation == 'UP' or board.player.orientation == 'DOWN':
@@ -63,6 +64,27 @@ class Window:
                                  self.TEXT_COLOR)
 
         self.screen.blit(label, (20, 40))
+
+        if sensors[0]:
+            label = self.font.render("SL", 1, (0,255,0))
+        else:
+            label = self.font.render("SL", 1, (255,0,0))
+
+        self.screen.blit(label, (20, 60))
+
+        if sensors[1]:
+            label = self.font.render("SF", 1, (0,255,0))
+        else:
+            label = self.font.render("SF", 1, (255,0,0))
+
+        self.screen.blit(label, (20, 70))
+
+        if sensors[2]:
+            label = self.font.render("SR", 1, (0,255,0))
+        else:
+            label = self.font.render("SR", 1, (255,0,0))
+
+        self.screen.blit(label, (20, 80))
 
         pygame.display.flip()
 

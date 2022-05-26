@@ -91,7 +91,7 @@ class Board:
         self.Reset()
 
     def Reset(self):
-        self.player.SetPosition(40, 40)
+        self.player.SetPosition(random.randint(40,560), random.randint(40,560))
         self.start_time = CurrentTIme()
         self.game_over = False
         self.score = 0
@@ -99,6 +99,7 @@ class Board:
         self.paths = []
         self.final_pos = [0,0]
         self.rotations = 0
+        self.tolerance = 1000
 
     def IsGameOver(self):
         return self.game_over
@@ -177,13 +178,13 @@ class Board:
         return self.matrix
 
     def GetSensorValues(self):
-        # left, front, right
+        # left, front, visited_path_in_front, right
         sensors = [0, 0, 0]
 
         player_position = self.GetPlayerPosition()
 
         # y
-        if (player_position[1] - 40) < 0:
+        if (player_position[1] - 40) <= 0:
             if self.player.orientation == "UP":
                 sensors[1] = 1
             elif self.player.orientation == 'LEFT':
@@ -191,7 +192,7 @@ class Board:
             elif self.player.orientation == 'RIGHT':
                 sensors[0] = 1
 
-        elif (player_position[1] + 40) > self.size[1]:
+        elif (player_position[1] + 40) >= self.size[1]:
             if self.player.orientation == "DOWN":
                 sensors[1] = 1
             elif self.player.orientation == 'RIGHT':
@@ -200,7 +201,7 @@ class Board:
                 sensors[1] = 1
 
         #x
-        if (player_position[0] + 40) > self.size[0]:
+        if (player_position[0] + 40) >= self.size[0]:
             if self.player.orientation == "UP":
                 sensors[2] = 1
             elif self.player.orientation == 'RIGHT':
@@ -208,7 +209,7 @@ class Board:
             elif self.player.orientation == 'DOWN':
                 sensors[0] = 1
 
-        elif (player_position[0] - 40) < 0:
+        elif (player_position[0] - 40) <= 0:
             if self.player.orientation == "UP":
                 sensors[0] = 1
             elif self.player.orientation == 'LEFT':
@@ -216,17 +217,39 @@ class Board:
             elif self.player.orientation == 'DOWN':
                 sensors[2] = 1
 
-        if self.player.orientation == "UP":
-            front_pos = [player_position[0], player_position[1] - 20]
-        elif self.player.orientation == "DOWN":
-            front_pos = [player_position[0], player_position[1] + 20]
-        elif self.player.orientation == "LEFT":
-            front_pos = [player_position[0] - 20, player_position[1]]
-        elif self.player.orientation == "RIGHT":
-            front_pos = [player_position[0] + 20, player_position[1]]
+        upper = [player_position[0], player_position[1] - 20]
+        lower = [player_position[0], player_position[1] + 20]
+        left  = [player_position[0] - 20, player_position[1]]
+        right = [player_position[0] + 20, player_position[1]]
 
-        if front_pos in self.paths:
-            sensors[1] = 1
+        if self.player.orientation == "UP":
+            if upper in self.paths:
+                sensors[1] = 1
+            if left in self.paths:
+                sensors[0] = 1
+            if right in self.paths:
+                sensors[2] = 1
+        elif self.player.orientation == "DOWN":
+            if lower in self.paths:
+                sensors[1] = 1
+            if left in self.paths:
+                sensors[2] = 1
+            if right in self.paths:
+                sensors[0] = 1
+        elif self.player.orientation == "LEFT":
+            if left in self.paths:
+                sensors[1] = 1
+            if upper in self.paths:
+                sensors[2] = 1
+            if lower in self.paths:
+                sensors[0] = 1
+        elif self.player.orientation == "RIGHT":
+            if right in self.paths:
+                sensors[1] = 1
+            if upper in self.paths:
+                sensors[0] = 1
+            if lower in self.paths:
+                sensors[2] = 1
 
         return sensors
 

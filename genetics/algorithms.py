@@ -43,6 +43,18 @@ def UniformCrossover(parent1, parent2):
 
     return child_layers
 
+def NeuronCrossover(parent1, parent2):
+    subject1_layers = parent1.network.GetWeights()
+    subject2_layers = parent2.network.GetWeights()
+    child_layers = np.copy(subject1_layers)
+
+    for layer in range(len(child_layers)):
+        for neuron in range(len(child_layers[layer])):
+            child_layers[layer][neuron] = random.choice([subject1_layers[layer][neuron],
+                                                         subject2_layers[layer][neuron]])
+
+    return child_layers
+
 
 def CreatePopulation(network, pop_size=5):
     return [Genome(network) for _ in range(pop_size)]
@@ -65,7 +77,7 @@ def EvolvePopulation(population, mutation_factor=0.1):
     print(" [i] Parent 2 fitness: %i" % parent2.GetFitness())
 
     for i in range(len(population) - 2):
-        child_layers = Mutation(UniformCrossover(parent1, parent2), mutation_factor)
+        child_layers = Mutation(NeuronCrossover(parent1, parent2), mutation_factor)
         population[i].network.SetWeights(child_layers)
 
     return population

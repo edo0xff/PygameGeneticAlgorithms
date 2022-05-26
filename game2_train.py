@@ -4,7 +4,7 @@ import pygame
 import genetics
 
 BOARD_SIZE = (600, 600)
-POPULATION_SIZE = 5
+POPULATION_SIZE = 20
 
 network = genetics.Network()
 
@@ -12,10 +12,12 @@ network.add(genetics.FCLayer(3, 20))
 network.add(genetics.ActivationLayer(genetics.tanh))
 network.add(genetics.FCLayer(20, 20))
 network.add(genetics.ActivationLayer(genetics.tanh))
+network.add(genetics.FCLayer(20, 20))
+network.add(genetics.ActivationLayer(genetics.tanh))
 network.add(genetics.FCLayer(20, 10))
 network.add(genetics.ActivationLayer(genetics.tanh))
 network.add(genetics.FCLayer(10, 3))
-network.add(genetics.ActivationLayer(genetics.tanh))
+network.add(genetics.ActivationLayer(genetics.sigmoid))
 
 population = genetics.CreatePopulation(network, pop_size=POPULATION_SIZE)
 boards = game2.CreateBoards(pop_size=POPULATION_SIZE, board_size=BOARD_SIZE)
@@ -32,6 +34,11 @@ while playing:
         if event.type == pygame.QUIT:
             playing = False
             pygame.quit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_k:
+                done_boards += 1
+                boards[display_board].game_over = True
 
     if not playing:
 
@@ -55,12 +62,13 @@ while playing:
 
             if board.IsGameOver():
                 done_boards += 1
-                AI.SetFitness(board.GetScore())
+
+            AI.SetFitness(board.GetScore())
 
         elif display_board == boards.index(board):
             display_board += 1
 
-    if done_boards == len(boards):
+    if done_boards >= len(boards):
 
         generation_count += 1
         display_board = 0
@@ -68,7 +76,7 @@ while playing:
 
         print(" [i] Evolving %i networks" % len(population))
 
-        population = genetics.EvolvePopulation(population, 0.25)
+        population = genetics.EvolvePopulation(population, 0.035)
 
         print(" [i] generation #%i evolved" % generation_count)
 
